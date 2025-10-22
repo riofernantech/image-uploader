@@ -2,8 +2,10 @@ import { prismaClient } from "../config/database.js";
 import bcrypt from "bcrypt";
 import ValidationException from "../exception/validationException.js";
 import validate from "../validation/validation.js";
-import { registerUserValidation } from "../validation/userValidation.js";
+import { loginUserValidation, registerUserValidation } from "../validation/userValidation.js";
 import jwt from 'jsonwebtoken';
+
+const JWT_SECRET = process.env.JWT_SECRET;
 
 const register = async (req) => {
     try {
@@ -24,7 +26,7 @@ const register = async (req) => {
 
         req.password = await bcrypt.hash(req.password, 10);
 
-        let user = await prismaClient.user.create({
+        const user = await prismaClient.user.create({
             data: req,
             select: {
                 email: true,
@@ -32,12 +34,10 @@ const register = async (req) => {
             }
         });
 
-        const JWT_SECRET = process.env.JWT_SECRET;
-
-        const token = jwt.sign({ user }, JWT_SECRET, { expiresIn: '7d' });
+        const token = jwt.sign({ email: user.email }, JWT_SECRET, { expiresIn: '7d' });
 
         return {
-            user,
+            email: user.email,
             token
         }
     } catch (error) {
@@ -46,7 +46,42 @@ const register = async (req) => {
 
 }
 
+const login = async (req) => {
+    try {
+        req = validate(loginUserValidation, req);
+
+        const user = await prismaClient.user.findUnique({
+            where: {
+                email: req.email
+            },
+            select: {
+                email: true,
+                name: true,
+                password: true
+            }
+        });
+
+        if (!user) {
+            throw new ValidationException('Email atau password salah', 401);
+        }
+
+        const valid = await bcrypt.compare(req.password, user.password);
+        if (!valid) {
+            throw new ValidationException('Email atau password salah', 401);
+        }
+
+        const token = jwt.sign({ email: user.email }, JWT_SECRET, { expiresIn: '7d' });
+
+        return {
+            email: user.email,
+            token
+        };
+    } catch (error) {
+        throw error;
+    }
+}
 
 export {
-    register
+    register,
+    login
 }
