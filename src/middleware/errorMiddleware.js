@@ -8,14 +8,21 @@ const errorMiddleware = async (err, req, res, next) => {
     }
 
     if (err instanceof ValidationException) {
-        res.status(err.status).json(
+        return res.status(err.status).json(
             ApiResponse.error(err.message, err.status)
-        ).end();
-    } else {
-        res.status(500).json(
-            ApiResponse.error(err.message, 500)
-        ).end();
+        );
     }
+
+    if (err instanceof SyntaxError && err.status === 400 && "body" in err) {
+        return res.status(400).json(
+            ApiResponse.error("Invalid JSON format", 400)
+        );
+    }
+
+    return res.status(500).json(
+        ApiResponse.error(err.message, 500)
+    ).end();
+
 }
 
 export default errorMiddleware;
