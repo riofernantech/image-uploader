@@ -13,4 +13,15 @@ export default class userController {
             next(error);
         }
     }
+
+    async login(req, res, next) {
+        try {
+            const result = await login(req.body);
+            res.json(
+                ApiResponse.success(result, "Berhasil Login")
+            );
+        } catch (error) {
+            next(error);
+        }
+    }
 }

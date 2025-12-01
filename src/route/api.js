@@ -5,6 +5,7 @@ const router = express.Router();
 
 const userCtrl = new userController();
 
-router.post('/api/users', userCtrl.register);
+router.post('/api/users/register', userCtrl.register);
+router.post('/api/users/login', userCtrl.login);
 
 export default router;
