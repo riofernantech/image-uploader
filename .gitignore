@@ -6,3 +6,4 @@ entity.txt
 /generated/prisma
 /vibes
 /tests
+/src/uploads/*

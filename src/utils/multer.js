@@ -1,6 +1,6 @@
 import multer from 'multer';
+import path from 'path';
 
-// Storage setup
 const storage = multer.memoryStorage();
 const upload = multer({
     storage,
