@@ -1,4 +1,4 @@
-import { upload } from "../service/imageService.js";
+import { upload, download } from "../service/imageService.js";
 import ApiResponse from "../utils/apiResponse.js";
 
 export default class imageController {
@@ -9,6 +9,18 @@ export default class imageController {
             res.json(
                 ApiResponse.success(result, "Berhasil Upload", 201)
             );
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    async download(req, res, next) {
+        try {
+            const result = await download(req);
+
+            res.setHeader('Content-Disposition', `attachment; filename="${result.originalname}"`);
+            res.setHeader('Content-Type', result.mimetype);
+            res.send(result.decrypted);
         } catch (error) {
             next(error);
         }
