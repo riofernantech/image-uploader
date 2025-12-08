@@ -31,7 +31,7 @@ const upload = async (req) => {
                 data: {
                     user_id: req.user.id,
                     file_id: fileId,
-                    name: req.file.originalname,
+                    name: originalname,
                     mimetype: req.file.mimetype,
                     size: req.file.size,
                     uploaded_at: new Date()
@@ -45,7 +45,7 @@ const upload = async (req) => {
             downloadUrl: `/api/download/${fileId}`,
             decryptionKey: keyString
         }
-    } catch (error) {
+    } catch (err) {
         throw new ValidationException(err.message);
     }
 }
@@ -79,6 +79,22 @@ const download = async (req) => {
     }
 }
 
+const getHistory = async (req) => {
+    try {
+        if (!req.user) return [];
+
+        const images = await prismaClient.image.findMany({
+            where: { user_id: req.user.id },
+            orderBy: { uploaded_at: 'desc' }
+        });
+
+        return images;
+    } catch (err) {
+        throw err;
+    }
+}
+
+
 function encryptFile(buffer, key) {
     const iv = crypto.randomBytes(16);
     const cipher = crypto.createCipheriv('aes-128-cbc', key, iv);
@@ -110,5 +126,6 @@ async function findFile(filepath) {
 
 export {
     upload,
-    download
+    download,
+    getHistory
 }

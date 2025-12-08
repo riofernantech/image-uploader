@@ -11,6 +11,7 @@ const imageCtrl = new imageController();
 
 router.post('/api/upload', upload.single('image'), authOptional, imageCtrl.upload);
 router.get('/api/download/:fileId', imageCtrl.download);
+router.get('/api/history', authOptional, imageCtrl.history);
 
 router.post('/api/users/register', userCtrl.register);
 router.post('/api/users/login', userCtrl.login);
