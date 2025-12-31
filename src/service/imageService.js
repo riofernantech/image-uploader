@@ -23,10 +23,24 @@ const upload = async (req) => {
         const filename = `${fileId}.enc`;
         const filepath = path.join(UPLOAD_DIR, filename);
 
+        const uploadedAt = new Date();
+
         const dataToSave = Buffer.concat([iv, encrypted]);
         await fs.writeFile(filepath, dataToSave);
 
+        let result = {
+            fileId,
+            filename: req.file.originalname,
+            downloadUrl: `/api/download/${fileId}`,
+            decryptionKey: keyString,
+            mimetype: req.file.mimetype,
+            size: req.file.size,
+            uploadedAt: uploadedAt,
+            historySave: false
+        }
+
         if (req.user) {
+            result.historySave = true;
             await prismaClient.image.create({
                 data: {
                     user_id: req.user.id,
@@ -34,17 +48,12 @@ const upload = async (req) => {
                     name: originalname,
                     mimetype: req.file.mimetype,
                     size: req.file.size,
-                    uploaded_at: new Date()
+                    uploaded_at: uploadedAt
                 }
             });
         }
 
-        return {
-            fileId,
-            filename: req.file.originalname,
-            downloadUrl: `/api/download/${fileId}`,
-            decryptionKey: keyString
-        }
+        return result;
     } catch (err) {
         throw new ValidationException(err.message);
     }
