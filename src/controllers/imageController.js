@@ -6,7 +6,7 @@ export default class imageController {
     async upload(req, res, next) {
         try {
             const result = await upload(req);
-            res.json(
+            res.status(201).json(
                 ApiResponse.success(result, "Berhasil Upload", 201)
             );
         } catch (error) {

@@ -6,8 +6,8 @@ export default class userController {
     async register(req, res, next) {
         try {
             const result = await register(req.body);
-            res.json(
-                ApiResponse.success(result, "Berhasil Registrasi")
+            res.status(201).json(
+                ApiResponse.success(result, "Berhasil Registrasi", 201)
             );
         } catch (error) {
             next(error);
