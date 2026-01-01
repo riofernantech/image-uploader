@@ -30,7 +30,7 @@ export default class imageController {
         try {
             const result = await getHistory(req);
             res.json(
-                ApiResponse.success(result, "Berhasil menampilkan history", 200)
+                ApiResponse.success(result, "Berhasil menampilkan history")
             );
         } catch (error) {
             next(error);

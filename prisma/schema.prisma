@@ -28,6 +28,7 @@ model Image {
   id          Int      @id @default(autoincrement())
   user_id     Int      @db.Int
   file_id     String   @db.VarChar(255)
+  decrypt_key String   @db.VarChar(50)
   name        String   @db.VarChar(255)
   mimetype    String   @db.VarChar(100)
   size        Int      @db.Int

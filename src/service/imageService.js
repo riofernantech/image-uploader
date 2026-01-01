@@ -45,6 +45,7 @@ const upload = async (req) => {
                 data: {
                     user_id: req.user.id,
                     file_id: fileId,
+                    decrypt_key: keyString,
                     name: originalname,
                     mimetype: req.file.mimetype,
                     size: req.file.size,
